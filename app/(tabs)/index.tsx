@@ -1,0 +1,49 @@
+import {Text, View, ScrollView, Image, FlatList} from "react-native";
+import {Link, useRouter} from "expo-router";
+import SearchBar from "@/components/SearchBar";
+import useFetch from "@/services/usefetch";
+import {fetchMovies} from "@/services/api";
+import MovieCard from "@/components/MovieCard";
+
+export default function Index() {
+    const router = useRouter();
+
+    const {
+        data: movies,
+        loading: moviesLoading,
+        error: moviesError,
+    } = useFetch(() => fetchMovies({ query: "" }));
+
+  return (
+      <View className="bg-screen flex-1">
+            <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false} contentContainerStyle={{minHeight: "100%"}}>
+                <Image className="w-12 h-12 mt-20 mb-5 mx-auto" source={require('@/assets/images/icon.png')} />
+                <View className="flex-1 mt-5">
+                    <SearchBar />
+                </View>
+
+                <>
+                    <Text className="text-lg text-primary-950 font-bold mt-5 mb-3">
+                        Latest Movies
+                    </Text>
+
+                    <FlatList
+                        data={movies}
+                        renderItem={({ item }) => <MovieCard {...item} />}
+                        keyExtractor={(item) => item.id.toString()}
+                        numColumns={3}
+                        columnWrapperStyle={{
+                            justifyContent: "flex-start",
+                            gap: 20,
+                            paddingRight: 5,
+                            marginBottom: 10,
+                        }}
+                        className="mt-2 pb-32"
+                        scrollEnabled={false}
+                    />
+                </>
+
+            </ScrollView>
+      </View>
+  );
+}
