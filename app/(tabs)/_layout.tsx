@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { ImageBackground, Image, Text, View } from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { icons } from "@/constants/icons";
 
 function TabIcon({ focused, icon, title }: any) {
     if (focused) {
@@ -8,7 +8,7 @@ function TabIcon({ focused, icon, title }: any) {
             <View
                 className="w-full overflow-hidden"
             >
-                <Icon name={icon} size={25} color="#F15A29FF" />
+                <Image source={icon} tintColor="#F15A29FF" className="size-8" />
             </View>
         );
     }
@@ -17,7 +17,7 @@ function TabIcon({ focused, icon, title }: any) {
         <View
             className="w-full overflow-hidden"
         >
-            <Icon name={icon} size={25} color="#7171717F" />
+            <Image source={icon} tintColor="#717171" className="size-8" />
         </View>
     );
 }
@@ -44,7 +44,7 @@ const RootLayout = () =>{
                   title: "index",
                   headerShown: false,
                   tabBarIcon: ({ focused }) => (
-                      <TabIcon focused={focused} icon="home" title="Home" />
+                      <TabIcon focused={focused} icon={icons.home} title="Home" />
                   ),
               }}
           />
@@ -55,7 +55,7 @@ const RootLayout = () =>{
                   title: "Search",
                   headerShown: false,
                   tabBarIcon: ({ focused }) => (
-                      <TabIcon focused={focused} icon="search" title="Search" />
+                      <TabIcon focused={focused} icon={icons.search} title="Search" />
                   ),
               }}
           />
@@ -66,7 +66,7 @@ const RootLayout = () =>{
                   title: "meals",
                   headerShown: false,
                   tabBarIcon: ({ focused }) => (
-                      <TabIcon focused={focused} icon="list-ul" title="Save" />
+                      <TabIcon focused={focused} icon={icons.order} title="Save" />
 
                   ),
               }}
@@ -78,7 +78,7 @@ const RootLayout = () =>{
                   title: "Profile",
                   headerShown: false,
                   tabBarIcon: ({ focused }) => (
-                      <TabIcon focused={focused} icon="user" title="Profile" />
+                      <TabIcon focused={focused} icon={icons.user} title="Profile" />
                   ),
               }}
           />
