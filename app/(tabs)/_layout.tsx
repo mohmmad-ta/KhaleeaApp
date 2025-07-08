@@ -1,6 +1,8 @@
 import { Tabs } from "expo-router";
 import { ImageBackground, Image, Text, View } from "react-native";
 import { icons } from "@/constants/icons";
+import {BlurView} from "expo-blur";
+import {colorsVar} from "@/constants/colorsVar";
 
 function TabIcon({ focused, icon, title }: any) {
     if (focused) {
@@ -38,6 +40,7 @@ const RootLayout = () =>{
               },
           }}
       >
+
           <Tabs.Screen
               name="index"
               options={{
@@ -48,7 +51,6 @@ const RootLayout = () =>{
                   ),
               }}
           />
-
           <Tabs.Screen
               name="search"
               options={{
@@ -61,14 +63,20 @@ const RootLayout = () =>{
           />
 
           <Tabs.Screen
-              name="meals"
+              name="shopCard"
               options={{
-                  title: "meals",
-                  headerShown: false,
+                  title: "",
+                  headerShown: true,
                   tabBarIcon: ({ focused }) => (
                       <TabIcon focused={focused} icon={icons.order} title="Save" />
-
                   ),
+                  headerTransparent: true,
+                  headerBackground: () => (
+                      <BlurView intensity={70} tint="light" style={{ flex: 1 }} />
+                  ),
+                  headerStyle: {
+                      height: 50,
+                  },
               }}
           />
 

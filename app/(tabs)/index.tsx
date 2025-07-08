@@ -1,13 +1,12 @@
-import {Text, View, ScrollView, Image, FlatList, Dimensions} from "react-native";
-import {Link, useRouter} from "expo-router";
-// import SearchBar from "@/components/SearchBar";
-// import useFetch from "@/services/usefetch";
-// import {fetchMovies} from "@/services/api";
-import MealCard from "@/components/MealCard";
+import {Text, View, ScrollView, Image, FlatList, Dimensions, Animated, ImageBackground,} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {Link, useRouter, useNavigation} from "expo-router";
 import Carousel from 'react-native-reanimated-carousel';
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
-
+import { BlurView } from 'expo-blur';
+import {colorsVar} from "@/constants/colorsVar"
+import ResCard from "@/components/ResCard";
 
 const { width } = Dimensions.get('window');
 export default function Index() {
@@ -27,9 +26,47 @@ export default function Index() {
         { id: '5', url: require('@/assets/images/p5.jpg') },
     ];
 
+    const navigation = useNavigation();
+    const scrollY = useRef(new Animated.Value(0)).current;
+    const [showHeader, setShowHeader] = useState(true);
+    useEffect(() => {
+        const listener = scrollY.addListener(({ value }) => {
+            if (value > 200 && showHeader) {
+                setShowHeader(false);
+                navigation.setOptions({
+                    headerShown: true,
+                    headerTransparent: true,
+                    headerBackground: () => (
+                        <BlurView intensity={70} tint="light" style={{ flex: 1 }} />
+                    ),
+                    headerTitleStyle: {
+                        color: colorsVar.primary,
+                    },
+                    headerTintColor: colorsVar.white,
+                });
+            } else if (value <= 200 && !showHeader) {
+                setShowHeader(true);
+                navigation.setOptions({ headerShown: false });
+            }
+        });
+
+        return () => {
+            scrollY.removeListener(listener);
+        };
+    }, [scrollY, showHeader]);
+
   return (
       <View className="bg-screen flex-1">
-            <ScrollView className="flex-1 relative" showsVerticalScrollIndicator={false} contentContainerStyle={{minHeight: "100%"}}>
+            <Animated.ScrollView
+                className="flex-1 relative"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{minHeight: "100%"}}
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                    { useNativeDriver: false }
+                )}
+                scrollEventThrottle={16}
+            >
 
                 <>
                     <View className="">
@@ -43,9 +80,10 @@ export default function Index() {
                             renderItem={({ item, index }) => (
                                 <View className="w-full justify-end items-center h-full relative">
                                     <Image source={item.url} resizeMode="cover" className="w-full absolute top-0 left-0 h-full" />
-                                    <View className="h-36 bg-primary-50 px-10 overflow-hidden py-4 justify-center w-full items-center">
-                                        <Text className="text-2xl font-bold text-white">{item.title}</Text>
-                                        <Text className="text-md text-center text-white mt-1">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam consequatur dignissimos error esse impedit inventore mollitia </Text>
+                                    <Image source={images.bot} className="w-full absolute bottom-0 left-0 h-36" />
+                                    <View className="h-36 px-10 overflow-hidden py-4 justify-center w-full items-center">
+                                        <Text className="text-2xl font-bold text-main-50">{item.title}</Text>
+                                        <Text className="text-md text-center text-primary-950 mt-1">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam consequatur dignissimos error esse impedit inventore mollitia </Text>
                                     </View>
                                 </View>
                             )}
@@ -54,35 +92,43 @@ export default function Index() {
                 </>
 
                 <>
-                    <View className="h-36 bg-secondary-500 absolute top-0 left-0 px-6 pt-12 justify-between flex-row w-full items-center">
-                        <Image source={icons.search} tintColor="#F15A29FF" className="size-8" />
-                        <Image source={images.bg} resizeMode="cover" className="w-36 h-10" />
+                    <View className="h-36 absolute top-0 left-0">
+                        <Image source={images.top} tintColor={colorsVar.secondary} className="w-full h-full absolute top-0 left-0" />
+                        <View className="px-6 justify-between flex-row w-full items-center pt-20">
+                            <Image source={icons.notification} tintColor="#F15A29FF" className="size-8" />
+                            <Image source={images.bg} resizeMode="cover" className="w-36 h-10" />
+                        </View>
                     </View>
                 </>
 
+
                 <>
-                    <Text className="text-lg text-primary-950 font-bold mt-5 mb-3">
-                        Latest Movies
-                    </Text>
+                    <View className="flex-row mt-10 gap-2 items-center justify-end px-6 w-full">
+                        <Text className="text-lg text-secondary-950 font-bold">
+                            Latest Movies
+                        </Text>
+                        <Link href={"/(rest)/homeRest"} >to rest page</Link>
+
+                        <Image source={icons.logo} tintColor="#F15A29FF" className="size-8" />
+                    </View>
 
                     <FlatList
                         data={mealData}
-                        renderItem={({ item }) => <MealCard {...item} />}
+                        renderItem={({ item }) => <ResCard {...item} />}
                         keyExtractor={(item) => item.id.toString()}
-                        numColumns={5}
+                        numColumns={2}
                         columnWrapperStyle={{
                             justifyContent: "center",
-                            display: "flex",
-                            flexWrap: "wrap",
-                            padding: 20,
+                            paddingHorizontal: 15,
+                            paddingVertical: 7.5,
                             gap: 15,
                         }}
-                        className="mt-2 pb-32 w-full"
+                        className="mt-2 pb-32 pt-2 w-full"
                         scrollEnabled={false}
                     />
                 </>
 
-            </ScrollView>
+            </Animated.ScrollView>
       </View>
   );
 }
