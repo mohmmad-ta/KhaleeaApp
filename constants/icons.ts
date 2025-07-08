@@ -14,6 +14,8 @@ import call from "@/assets/icons/call-01.png"
 import star from "@/assets/icons/star-01.png"
 import remove from "@/assets/icons/----01.png"
 import time from "@/assets/icons/time-01.png"
+import close from "@/assets/icons/X-01.png"
+import box from "@/assets/icons/mm-01.png"
 
 export const icons = {
   home,
@@ -31,5 +33,7 @@ export const icons = {
   dele,
   add,
   time,
-  remove
+  remove,
+  close,
+  box,
 };

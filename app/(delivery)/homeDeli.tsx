@@ -19,7 +19,7 @@ import {colorsVar} from "@/constants/colorsVar"
 import ResCard from "@/components/ResCard";
 
 const { width } = Dimensions.get('window');
-export default function HomeRest() {
+export default function HomeDeli() {
     const router = useRouter();
     const data = [
         { title: 'lorem test 1', url: require('@/assets/images/p1.jpg') },
@@ -63,8 +63,8 @@ export default function HomeRest() {
         };
     }, [scrollY, showHeader]);
 
-  return (
-      <View className="bg-screen flex-1">
+    return (
+        <View className="bg-screen flex-1">
             <Animated.ScrollView
                 className="flex-1 py-20 relative"
                 showsVerticalScrollIndicator={false}
@@ -124,6 +124,6 @@ export default function HomeRest() {
 
 
             </Animated.ScrollView>
-      </View>
-  );
+        </View>
+    );
 }

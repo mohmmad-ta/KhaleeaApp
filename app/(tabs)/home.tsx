@@ -9,7 +9,7 @@ import {colorsVar} from "@/constants/colorsVar"
 import ResCard from "@/components/ResCard";
 
 const { width } = Dimensions.get('window');
-export default function Index() {
+export default function Home() {
     const router = useRouter();
     const data = [
         { title: 'lorem test 1', url: require('@/assets/images/p1.jpg') },

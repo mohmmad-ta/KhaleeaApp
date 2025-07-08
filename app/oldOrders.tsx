@@ -21,6 +21,7 @@ const OldOrders = () => {
                 className="flex-1 px-4 pt-32"
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{minHeight: "100%"}}
+                scrollEventThrottle={16}
             >
                 <FlatList
                     data={mealData}

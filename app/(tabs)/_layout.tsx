@@ -42,9 +42,9 @@ const RootLayout = () =>{
       >
 
           <Tabs.Screen
-              name="index"
+              name="home"
               options={{
-                  title: "index",
+                  title: "home",
                   headerShown: false,
                   tabBarIcon: ({ focused }) => (
                       <TabIcon focused={focused} icon={icons.home} title="Home" />

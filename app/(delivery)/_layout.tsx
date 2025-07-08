@@ -45,29 +45,9 @@ const RootLayout = () =>{
               name="homeRest"
               options={{
                   title: "homeRest",
-                  headerShown: false,
+                  headerShown: true,
                   tabBarIcon: ({ focused }) => (
                       <TabIcon focused={focused} icon={icons.home} title="Home" />
-                  ),
-              }}
-          />
-          <Tabs.Screen
-              name="menuRest"
-              options={{
-                  title: "homeRest",
-                  headerShown: false,
-                  tabBarIcon: ({ focused }) => (
-                      <TabIcon focused={focused} icon={icons.menu} title="Home" />
-                  ),
-              }}
-          />
-          <Tabs.Screen
-              name="profileRest"
-              options={{
-                  title: "profileRest",
-                  headerShown: false,
-                  tabBarIcon: ({ focused }) => (
-                      <TabIcon focused={focused} icon={icons.user} title="Home" />
                   ),
               }}
           />
