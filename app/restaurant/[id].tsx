@@ -7,17 +7,11 @@ import Carousel from "react-native-reanimated-carousel";
 import {images} from "@/constants/images";
 import {icons} from "@/constants/icons";
 import MealCard from "@/components/MealCard";
+import {getRestaurantMeals} from "@/services/meals/mealsApi";
 
 const Restaurant = () => {
-    // const {id} = useLocalSearchParams()
+    const {id} = useLocalSearchParams()
     const router = useRouter();
-    const data = [
-        { title: 'lorem test 1', url: require('@/assets/images/p1.jpg') },
-        { title: 'lorem test 2', url: require('@/assets/images/p2.jpg') },
-        { title: 'lorem test 3', url: require('@/assets/images/p3.jpg') },
-        { title: 'lorem test 4', url: require('@/assets/images/p4.jpg') },
-        { title: 'lorem test 5', url: require('@/assets/images/p5.jpg') },
-    ];
     const mealData = [
         { id: '1', url: require('@/assets/images/p1.jpg') },
         { id: '2', url: require('@/assets/images/p2.jpg') },
@@ -63,6 +57,20 @@ const Restaurant = () => {
             scrollY.removeListener(listener);
         };
     }, [scrollY, showHeader]);
+
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getRestaurantMeals(id).then((response) => {
+            setData(response.data);
+            setLoading(false)
+        })
+            .catch((error) => {
+                console.error('Failed to fetch data:', error);
+                setLoading(false);
+            });
+    }, []);
 
     return (
         <View className="bg-screen flex-1">
@@ -111,7 +119,7 @@ const Restaurant = () => {
 
                     <View className="w-full pb-32 px-4">
                         <FlatList
-                            data={mealData}
+                            data={data}
                             renderItem={({ item }) =>
                                 <MealCard {...item}/>
                             }

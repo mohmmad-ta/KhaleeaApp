@@ -1,6 +1,28 @@
 interface Meal {
   id: any;
-  url: any;
+  name: string;
+  description: string;
+  slug: string;
+  restaurantId: string;
+  price: any;
+  image: string;
+}
+
+interface User {
+  name: string;
+  phone: any;
+}
+interface Restaurant {
+  name: string;
+  phone: any;
+}
+interface Delivery {
+  name: string;
+  userID: string;
+  password: string;
+  passwordConfirm: string;
+  restaurantId: string;
+  role: string;
 }
 
 interface TrendingMovie {

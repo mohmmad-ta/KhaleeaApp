@@ -7,11 +7,12 @@ import { images } from "@/constants/images";
 import { BlurView } from 'expo-blur';
 import {colorsVar} from "@/constants/colorsVar"
 import ResCard from "@/components/ResCard";
+import {getAllRestaurant} from "@/services/meals/mealsApi";
 
 const { width } = Dimensions.get('window');
 export default function Home() {
     const router = useRouter();
-    const data = [
+    const data1 = [
         { title: 'lorem test 1', url: require('@/assets/images/p1.jpg') },
         { title: 'lorem test 2', url: require('@/assets/images/p2.jpg') },
         { title: 'lorem test 3', url: require('@/assets/images/p3.jpg') },
@@ -55,6 +56,24 @@ export default function Home() {
         };
     }, [scrollY, showHeader]);
 
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getAllRestaurant().then((response) => {
+            setData(response.data);
+            setLoading(false)
+        })
+            .catch((error) => {
+                console.error('Failed to fetch data:', error);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <Text>Loading...</Text>;
+    }
+
   return (
       <View className="bg-screen flex-1">
             <Animated.ScrollView
@@ -73,7 +92,7 @@ export default function Home() {
                         <Carousel
                             width={width}
                             height={500}
-                            data={data}
+                            data={data1}
                             autoPlay={true}
                             autoPlayInterval={5000}
                             scrollAnimationDuration={1000}
@@ -113,7 +132,7 @@ export default function Home() {
                     </View>
 
                     <FlatList
-                        data={mealData}
+                        data={data}
                         renderItem={({ item }) => <ResCard {...item} />}
                         keyExtractor={(item) => item.id.toString()}
                         numColumns={2}

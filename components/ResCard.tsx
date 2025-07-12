@@ -3,11 +3,11 @@ import { Text, Image, TouchableOpacity, View } from "react-native";
 import { images } from "@/constants/images";
 import {icons} from "@/constants/icons";
 
-const ResCard = ({id, url,}: Meal) => {
+const ResCard = ({name, description, id, price, image}: Meal) => {
     return (
         <Link href={`/restaurant/${id}`} asChild>
             <TouchableOpacity className="w-[48%] bg-white rounded-xl shadow-md shadow-primary-200">
-                <Image source={url} resizeMode="cover" className="w-full h-32 rounded-lg" />
+                <Image source={{uri: image}} resizeMode="cover" className="w-full h-32 rounded-lg" />
 
                 <View className="p-3">
                     <Text className="text-md font-bold mb-1 text-primary-950 text-center" numberOfLines={1}>

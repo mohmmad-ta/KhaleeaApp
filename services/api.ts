@@ -1,54 +1,26 @@
-export const TMDB_CONFIG = {
-    BASE_URL: "https://api.themoviedb.org/3",
-    API_KEY: process.env.EXPO_PUBLIC_MOVIE_API_KEY,
+import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useState} from "react";
+
+const API = axios.create({
+    baseURL: 'http://localhost:7060/api/v1',
+    timeout: 10000,
     headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${process.env.EXPO_PUBLIC_MOVIE_API_KEY}`,
+        'Content-Type': 'application/json',
     },
-};
+});
 
-export const fetchMovies = async ({
-                                      query,
-                                  }: {
-    query: string;
-}): Promise<Movie[]> => {
-    const endpoint = query
-        ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-        : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc`;
-
-    const response = await fetch(endpoint, {
-        method: "GET",
-        headers: TMDB_CONFIG.headers,
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to fetch movies: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.results;
-};
-
-export const fetchMovieDetails = async (
-    movieId: string
-): Promise<MovieDetails> => {
-    try {
-        const response = await fetch(
-            `${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${TMDB_CONFIG.API_KEY}`,
-            {
-                method: "GET",
-                headers: TMDB_CONFIG.headers,
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch movie details: ${response.statusText}`);
+// Add token if needed
+API.interceptors.request.use(
+    async (config) => {
+        const token = await AsyncStorage.getItem('authToken'); // import AsyncStorage
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
         }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
 
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching movie details:", error);
-        throw error;
-    }
-};
+
+export default API;

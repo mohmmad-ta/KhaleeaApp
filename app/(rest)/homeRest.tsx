@@ -16,18 +16,11 @@ import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { BlurView } from 'expo-blur';
 import {colorsVar} from "@/constants/colorsVar"
-import ResCard from "@/components/ResCard";
+import {getAllMeals} from "@/services/meals/mealsApi";
 
 const { width } = Dimensions.get('window');
 export default function HomeRest() {
     const router = useRouter();
-    const data = [
-        { title: 'lorem test 1', url: require('@/assets/images/p1.jpg') },
-        { title: 'lorem test 2', url: require('@/assets/images/p2.jpg') },
-        { title: 'lorem test 3', url: require('@/assets/images/p3.jpg') },
-        { title: 'lorem test 4', url: require('@/assets/images/p4.jpg') },
-        { title: 'lorem test 5', url: require('@/assets/images/p5.jpg') },
-    ];
     const mealData = [
         { id: 1, url: require('@/assets/images/p1.jpg') },
         { id: 2, url: require('@/assets/images/p2.jpg') },
@@ -63,6 +56,24 @@ export default function HomeRest() {
         };
     }, [scrollY, showHeader]);
 
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getAllMeals().then((response) => {
+                setData(response.data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error('Failed to fetch data:', error);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <Text>Loading...</Text>;
+    }
+
   return (
       <View className="bg-screen flex-1">
             <Animated.ScrollView
@@ -78,7 +89,7 @@ export default function HomeRest() {
 
 
                 <FlatList
-                    data={mealData}
+                    data={data}
                     renderItem={({ item }) =>
                         <Link className={"w-full px-6"} href={"/shopCard"}>
                             <TouchableOpacity className="w-full p-5 items-end rounded-md bg-white shadow-md shadow-primary-200">
