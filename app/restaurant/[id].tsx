@@ -59,18 +59,24 @@ const Restaurant = () => {
     }, [scrollY, showHeader]);
 
     const [data, setData] = useState<any[]>([]);
+    const [meals, setMeals] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getRestaurantMeals(id).then((response) => {
             setData(response.data);
+            setMeals(response.data.meal);
             setLoading(false)
+            console.log(response.data.meal)
         })
             .catch((error) => {
                 console.error('Failed to fetch data:', error);
                 setLoading(false);
             });
     }, []);
+    if (loading) {
+        return <Text>Loading...</Text>;
+    }
 
     return (
         <View className="bg-screen flex-1">
@@ -119,7 +125,7 @@ const Restaurant = () => {
 
                     <View className="w-full pb-32 px-4">
                         <FlatList
-                            data={data}
+                            data={meals}
                             renderItem={({ item }) =>
                                 <MealCard {...item}/>
                             }

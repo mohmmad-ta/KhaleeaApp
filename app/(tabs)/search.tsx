@@ -1,24 +1,27 @@
-import {FlatList, Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
-import {images} from "@/constants/images";
+import {FlatList, Image, ScrollView, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {icons} from "@/constants/icons";
-import SearchBar from "@/components/SearchBar";
 import ResCard from "@/components/ResCard";
+import {useEffect, useState} from "react";
+import {getSearch} from "@/services/meals/mealsApi";
+
 
 export default function Search() {
-    const cat = [
-        { id: 'test 1', url: require('@/assets/images/p1.jpg') },
-        { id: 'test 2', url: require('@/assets/images/p1.jpg') },
-        { id: 'test 3 mohmmad', url: require('@/assets/images/p1.jpg') },
-        { id: 'test 4', url: require('@/assets/images/p1.jpg') },
-        { id: 'test 5', url: require('@/assets/images/p1.jpg') },
-    ];
-    const mealData = [
-        { id: '1', url: require('@/assets/images/p1.jpg') },
-        { id: '2', url: require('@/assets/images/p2.jpg') },
-        { id: '3', url: require('@/assets/images/p3.jpg') },
-        { id: '4', url: require('@/assets/images/p4.jpg') },
-        { id: '5', url: require('@/assets/images/p5.jpg') },
-    ];
+    const [searchTerm, setSearchTerm] = useState('');
+    const [meals, setMeals] = useState([]);
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            if (searchTerm.length > 0) {
+                getSearch(searchTerm).then((data)=>{setMeals(data.data)});
+                console.log(meals)
+            } else {
+                setMeals([]);
+            }
+        }, 500); // debounce time
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchTerm]);
+
   return (
       <View className="bg-screen flex-1">
           <ScrollView
@@ -28,12 +31,21 @@ export default function Search() {
               scrollEventThrottle={16}
           >
               <View className="px-4">
-                  <SearchBar />
+                  <View className="flex-row gap-2 bg-white border-2 justify-end border-secondary-100 items-center bg-dark-200 rounded-full px-5 py-3">
+                      <TextInput
+                          placeholder="Search"
+                          className="flex-1 text-right ml-2 font-semibold text-primary-950"
+                          placeholderTextColor="#F15A29FF"
+                          value={searchTerm}
+                          onChangeText={setSearchTerm}
+                      />
+                      <Image source={icons.search} tintColor="#F15A29FF" className="size-6" />
+                  </View>
               </View>
               <View className="w-full px-4 mt-2 items-center justify-center ">
                   <FlatList
                       horizontal
-                      data={cat}
+                      data={meals}
                       renderItem={({ item }) =>
                           <TouchableOpacity className="flex-row gap-2 items-center bg-white border-2 border-secondary-100 shadow-md shadow-screens-50 justify-end px-4 py-1 rounded-full">
                               <Text className="text-lg text-secondary-950 font-bold">
@@ -51,7 +63,7 @@ export default function Search() {
               </View>
               <>
                   <FlatList
-                      data={mealData}
+                      data={meals}
                       renderItem={({ item }) => <ResCard {...item} />}
                       keyExtractor={(item) => item.id.toString()}
                       numColumns={2}

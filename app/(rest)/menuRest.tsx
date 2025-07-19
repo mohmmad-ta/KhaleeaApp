@@ -6,23 +6,9 @@ import {colorsVar} from "@/constants/colorsVar";
 import {icons} from "@/constants/icons";
 import MealCard from "@/components/MealCard";
 import MealForm from "@/components/MealForm";
+import { getMyAllMeals} from "@/services/meals/mealsApi";
 
 export default function Profile() {
-    const router = useRouter();
-    const data = [
-        { title: 'lorem test 1', url: require('@/assets/images/p1.jpg') },
-        { title: 'lorem test 2', url: require('@/assets/images/p2.jpg') },
-        { title: 'lorem test 3', url: require('@/assets/images/p3.jpg') },
-        { title: 'lorem test 4', url: require('@/assets/images/p4.jpg') },
-        { title: 'lorem test 5', url: require('@/assets/images/p5.jpg') },
-    ];
-    const mealData = [
-        { id: '1', url: require('@/assets/images/p1.jpg') },
-        { id: '2', url: require('@/assets/images/p2.jpg') },
-        { id: '3', url: require('@/assets/images/p3.jpg') },
-        { id: '4', url: require('@/assets/images/p4.jpg') },
-        { id: '5', url: require('@/assets/images/p5.jpg') },
-    ];
     const [modalVisible, setModalVisible] = useState(false);
     const display = ()=>{
         setModalVisible(false)
@@ -32,7 +18,7 @@ export default function Profile() {
     const [showHeader, setShowHeader] = useState(true);
     useEffect(() => {
         const listener = scrollY.addListener(({ value }) => {
-            if (value > 100 && showHeader) {
+            if (value > 50 && showHeader) {
                 setShowHeader(false);
                 navigation.setOptions({
                     headerShown: true,
@@ -45,7 +31,7 @@ export default function Profile() {
                     },
                     headerTintColor: colorsVar.white,
                 });
-            } else if (value <= 100 && !showHeader) {
+            } else if (value <= 50 && !showHeader) {
                 setShowHeader(true);
                 navigation.setOptions({ headerShown: false });
             }
@@ -55,6 +41,24 @@ export default function Profile() {
             scrollY.removeListener(listener);
         };
     }, [scrollY, showHeader]);
+
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getMyAllMeals().then((response) => {
+            setData(response.data);
+            setLoading(false)
+        })
+            .catch((error) => {
+                console.error('Failed to fetch data:', error);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <Text>Loading...</Text>;
+    }
 
     return (
         <View className="bg-screen flex-1">
@@ -79,7 +83,7 @@ export default function Profile() {
 
                 <View className="w-full pb-32 px-4">
                     <FlatList
-                        data={mealData}
+                        data={data}
                         renderItem={({ item }) =>
                             <MealCard {...item}/>
                         }

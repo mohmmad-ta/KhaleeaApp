@@ -1,62 +1,64 @@
-import {Alert, Image, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {BlurView} from "expo-blur";
-import {icons} from "@/constants/icons";
-import {userLogin} from "@/services/auth/userApi"
+import { Image, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {images} from "@/constants/images";
 import {useState} from "react";
-import {Link} from "expo-router";
-import {validatePhone} from "@/utils/utils"
+import { useRouter} from "expo-router";
+import {deliveryLogin} from "@/services/auth/deliveryApi";
 
 
 export default function LoginDeli() {
+    const router = useRouter();
+
     const [user, setUser] = useState({
-        name: '',
-        phone: '',
+        userID: '',
+        password: '',
     });
 
-    const [alertOne, setAlertsOne] = useState<{ phone?: string; name?: string }>({});
+    const [alertOne, setAlertsOne] = useState<{ userID?: string; password?: string }>({});
 
     const handleSubmit = () => {
-        if (!user.name.trim()) {
-            setAlertsOne((prev) => ({ ...prev, name: 'Name is required' }))
-        } else if (!validatePhone(user.phone)) {
-            setAlertsOne((prev) => ({ ...prev, name: '', phone: 'Phone must be exactly 11 digits and start with 07' }))
+        if (!user.userID.trim()) {
+            setAlertsOne((prev) => ({ ...prev, userID: 'Name is required' }))
+        } else if (!user.password) {
+            setAlertsOne((prev) => ({ ...prev, userID: '', password: 'Phone must be exactly 11 digits and start with 07' }))
         } else {
-            userLogin(user).then((res) => {console.log(res.data)})
+            deliveryLogin(user).then(() => {
+                router.replace('/(delivery)/homeDeli');})
         }
     };
     return (
         <View className="px-14 w-full justify-center items-end min-h-screen bg-white py-20">
             <View className="w-full gap-2 items-center">
-                <Text>login</Text>
                 <Image source={images.bg} className={"w-60 h-16 mb-12"} />
-                <Text className="w-full text-right mt-2 text-secondary-950">Product Name</Text>
-                <TextInput
-                    placeholder="Enter Name"
-                    className="w-full bg-secondary-50 border text-right p-2 border-gray-300 rounded-md"
-                    value={user.name}
-                    onChangeText={(text) =>
-                        setUser((prev) => ({ ...prev, name: text }))
-                    }
-                />
-                {alertOne.name && <Text className="text-xs text-right text-red-500">{alertOne.name}</Text>}
 
-
-                <Text className="w-full text-right mt-2 text-secondary-950">Description</Text>
+                <Text className="w-full text-right mt-2 text-secondary-950">userID</Text>
                 <TextInput
                     className="w-full bg-secondary-50 border text-right p-2 border-gray-300 rounded-md"
-                    placeholder="Enter Phone (e.g. 07xxxxxxxxx)"
-                    value={user.phone}
+                    placeholder="Enter user ID"
+                    value={user.userID}
                     onChangeText={(text) =>
                         setUser((prev) => ({
                             ...prev,
-                            phone: text.replace(/[^0-9]/g, ''),
+                            userID: text,
                         }))
                     }
-                    keyboardType="numeric"
+                />
+                {alertOne.userID && <Text className="text-xs text-right text-red-500">{alertOne.userID}</Text>}
+
+                <Text className="w-full text-right mt-2 text-secondary-950">password</Text>
+                <TextInput
+                    className="w-full bg-secondary-50 border text-right p-2 border-gray-300 rounded-md"
+                    placeholder="Enter password"
+                    value={user.password}
+                    onChangeText={(text) =>
+                        setUser((prev) => ({
+                            ...prev,
+                            password: text,
+                        }))
+                    }
+                    keyboardType="visible-password"
                     maxLength={11}
                 />
-                {alertOne.phone && <Text className="text-xs text-right text-red-500">{alertOne.phone}</Text>}
+                {alertOne.password && <Text className="text-xs text-right text-red-500">{alertOne.password}</Text>}
 
                 <TouchableOpacity
                     onPress={handleSubmit}
@@ -64,12 +66,6 @@ export default function LoginDeli() {
                 >
                     <Text className="text-white font-bold w-full text-center">Custom Button</Text>
                 </TouchableOpacity>
-                <Link
-                    href="/signup"
-                    className="p-2 w-full mt-8"
-                >
-                    <Text className="text-primary-950 w-full text-right">I dont have an account</Text>
-                </Link>
             </View>
         </View>
     );

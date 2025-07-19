@@ -1,38 +1,28 @@
 import {
     Text,
     View,
-    ScrollView,
-    Image,
     FlatList,
     Dimensions,
     Animated,
-    ImageBackground,
     TouchableOpacity,
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import {Link, useRouter, useNavigation} from "expo-router";
-import Carousel from 'react-native-reanimated-carousel';
-import { icons } from "@/constants/icons";
-import { images } from "@/constants/images";
 import { BlurView } from 'expo-blur';
 import {colorsVar} from "@/constants/colorsVar"
-import {getAllMeals} from "@/services/meals/mealsApi";
+import { getMyAllMeals} from "@/services/meals/mealsApi";
+import {useOrderStore} from '@/store/useDataStore';
+import {myRestAllOrders} from "@/services/orders/orderApi";
 
 const { width } = Dimensions.get('window');
 export default function HomeRest() {
     const router = useRouter();
-    const mealData = [
-        { id: 1, url: require('@/assets/images/p1.jpg') },
-        { id: 2, url: require('@/assets/images/p2.jpg') },
-        { id: 3, url: require('@/assets/images/p3.jpg') },
-    ];
-
     const navigation = useNavigation();
     const scrollY = useRef(new Animated.Value(0)).current;
     const [showHeader, setShowHeader] = useState(true);
     useEffect(() => {
         const listener = scrollY.addListener(({ value }) => {
-            if (value > 200 && showHeader) {
+            if (value > 50 && showHeader) {
                 setShowHeader(false);
                 navigation.setOptions({
                     headerShown: true,
@@ -45,7 +35,7 @@ export default function HomeRest() {
                     },
                     headerTintColor: colorsVar.white,
                 });
-            } else if (value <= 200 && !showHeader) {
+            } else if (value <= 50 && !showHeader) {
                 setShowHeader(true);
                 navigation.setOptions({ headerShown: false });
             }
@@ -56,12 +46,13 @@ export default function HomeRest() {
         };
     }, [scrollY, showHeader]);
 
-    const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const { setOrders, orders } = useOrderStore();
 
     useEffect(() => {
-        getAllMeals().then((response) => {
-                setData(response.data);
+        myRestAllOrders().then((response) => {
+            console.log(response.data);
+            setOrders(response.data);
                 setLoading(false);
             })
             .catch((error) => {
@@ -73,6 +64,9 @@ export default function HomeRest() {
     if (loading) {
         return <Text>Loading...</Text>;
     }
+
+
+
 
   return (
       <View className="bg-screen flex-1">
@@ -89,25 +83,25 @@ export default function HomeRest() {
 
 
                 <FlatList
-                    data={data}
-                    renderItem={({ item }) =>
+                    data={orders}
+                    renderItem={({ item: order  }) =>
                         <Link className={"w-full px-6"} href={"/shopCard"}>
                             <TouchableOpacity className="w-full p-5 items-end rounded-md bg-white shadow-md shadow-primary-200">
                                 <View className="flex-row mb-3 justify-between w-full items-center">
                                     <View className="rounded-full border py-0.5 px-2 border-main-50">
-                                        <Text className="text-md text-main-50 font-bold">Latest</Text>
+                                        <Text className="text-md text-main-50 font-bold">{order.status}</Text>
                                     </View>
                                     <View className="gap-1 items-end">
-                                        <Text className="text-lg text-primary-950 font-bold">07716210124</Text>
-                                        <Text className="text-sm text-secondary-950">Lorem ipsum dolor</Text>
+                                        <Text className="text-lg text-primary-950 font-bold">{order.userId.phone}</Text>
+                                        <Text className="text-sm text-secondary-950">{order.location}</Text>
                                     </View>
                                 </View>
                                 <View className="w-full">
                                     <FlatList
-                                        data={mealData}
-                                        renderItem={({item})=>
-                                            <View className={`${item.id % 2 === 0 ? "bg-secondary-50" : "bg-none"} items-end py-2 rounded`}>
-                                                <Text className="text-secondary-950 text-md font-bold"> mohmmad <Text className="text-main-50"> {item.id} </Text></Text>
+                                        data={order.item}
+                                        renderItem={({item: meal, index})=>
+                                            <View className={`${index+1 % 2 === 0 ? "bg-secondary-50" : "bg-none"} items-end py-2 rounded`}>
+                                                <Text className="text-secondary-950 text-md font-bold"> {meal.Id.name} <Text className="text-main-50"> {index+1} </Text></Text>
                                             </View>
                                         }
                                         className="gap-1 w-full"
@@ -115,13 +109,13 @@ export default function HomeRest() {
                                     />
                                 </View>
                                 <Text className="text-md w-full text-center mt-1.5 font-bold gap-2">
-                                    <Text className="text-main-50"> $ </Text>
-                                    <Text className="text-secondary-950">44.99</Text>
+                                    <Text className="text-main-50"> ID </Text>
+                                    <Text className="text-secondary-950">{order.totalPrice}</Text>
                                 </Text>
                             </TouchableOpacity>
                         </Link>
                     }
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item.id}
                     numColumns={5}
                     columnWrapperStyle={{
                         justifyContent: "center",

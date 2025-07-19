@@ -3,7 +3,7 @@ import { Text, Image, TouchableOpacity, View } from "react-native";
 import { images } from "@/constants/images";
 import {icons} from "@/constants/icons";
 
-const ResCard = ({name, description, id, price, image}: Meal) => {
+const ResCard = ({name, description, id, image}: Meal) => {
     return (
         <Link href={`/restaurant/${id}`} asChild>
             <TouchableOpacity className="w-[48%] bg-white rounded-xl shadow-md shadow-primary-200">
@@ -11,10 +11,10 @@ const ResCard = ({name, description, id, price, image}: Meal) => {
 
                 <View className="p-3">
                     <Text className="text-md font-bold mb-1 text-primary-950 text-center" numberOfLines={1}>
-                        Lorem ipsum
+                        {name}
                     </Text>
                     <Text className="text-xs font-bold text-center text-secondary-950" numberOfLines={1}>
-                        lorem ipsum
+                        {description}
                     </Text>
 
                     <View className="flex-row py-1.5 items-center justify-between">

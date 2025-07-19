@@ -6,6 +6,7 @@ import {images} from "@/constants/images";
 import {useState} from "react";
 import {Link, Redirect, useRouter} from "expo-router";
 import {validatePhone} from "@/utils/utils"
+import LoginList from "@/components/LoginList";
 
 const router = useRouter();
 export default function Login() {
@@ -14,13 +15,16 @@ export default function Login() {
         phone: '',
     });
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const display = ()=>{
+        setModalVisible(false)
+    }
+
     const [alertOne, setAlertsOne] = useState<{ phone?: string; name?: string }>({});
 
 
     const handleSubmit = () => {
-        if (!user.name.trim()) {
-            setAlertsOne((prev) => ({ ...prev, name: 'Name is required' }))
-        } else if (!validatePhone(user.phone)) {
+        if (!validatePhone(user.phone)) {
             setAlertsOne((prev) => ({ ...prev, name: '', phone: 'Phone must be exactly 11 digits and start with 07' }))
         } else {
             userLogin(user).then((res) => {
@@ -33,17 +37,6 @@ export default function Login() {
             <View className="w-full gap-2 items-center">
                 <Text>login</Text>
                 <Image source={images.bg} className={"w-60 h-16 mb-12"} />
-                <Text className="w-full text-right mt-2 text-secondary-950">Product Name</Text>
-                <TextInput
-                    placeholder="Enter Name"
-                    className="w-full bg-secondary-50 border text-right p-2 border-gray-300 rounded-md"
-                    value={user.name}
-                    onChangeText={(text) =>
-                        setUser((prev) => ({ ...prev, name: text }))
-                    }
-                />
-                {alertOne.name && <Text className="text-xs text-right text-red-500">{alertOne.name}</Text>}
-
 
                 <Text className="w-full text-right mt-2 text-secondary-950">Description</Text>
                 <TextInput
@@ -71,12 +64,19 @@ export default function Login() {
                     href="/signup"
                     className="p-2 w-full mt-8"
                 >
-                    <Text className="text-primary-950 w-full text-right">I dont have an account</Text>
+                    <Text className="text-secondary-950 w-full text-right">I dont have an account</Text>
                 </Link>
             </View>
-            <View className="w-full gap-2 absolute left-0 bottom-12 items-center bg-green-600">
-                <Image source={icons.user} className={"w-60 h-16 mb-12"} />
+            <View className="w-full p-6 absolute left-0 bottom-10">
+                <TouchableOpacity
+                    onPress={() => setModalVisible(true)}
+                    className="flex-row items-center gap-2"
+                >
+                    <Image source={icons.user} tintColor="#747473" className={"size-6"} />
+                    <Text className="text-secondary-950 text-sm">Login with anther account</Text>
+                </TouchableOpacity>
             </View>
+            <LoginList togDisplay={display} display={modalVisible} />
         </View>
     );
 }

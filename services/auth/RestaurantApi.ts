@@ -3,11 +3,11 @@ import api from "../api"
 import {storeKey} from "@/utils/utils";
 
 // For Restaurant Access
-export const restaurantLogin = async ({phone}: Restaurant) => {
+export const restaurantLogin = async ({phone}: any) => {
     const res = await api.post(`/auth/restaurant/login`,{
         phone: phone,
     });
-    storeKey("userToken", res.data.token)
+    storeKey("authToken", res.data.token)
     storeKey("role", res.data.data.user.role)
     return res.data;
 };
@@ -22,19 +22,27 @@ export const getMe = async () => {
     const res = await api.get(`/auth/restaurant/getMe`);
     return res.data;
 };
+export const getAllMyDelivery = async () => {
+    const res = await api.get(`/auth/restaurant/getAllMyDelivery`);
+    return res.data;
+};
 export const deleteMe = async () => {
-    const res = await api.delete(`/auth/restaurant/updateMe`);
+    const res = await api.delete(`/auth/restaurant/deleteMe`);
     return res.data;
 };
-export const updateMe = async () => {
-    const res = await api.patch(`/auth/restaurant/deleteMe`);
+export const updateMe = async (restaurant: any) => {
+    const res = await api.patch(`/auth/restaurant/updateMe`, restaurant, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
     return res.data;
 };
-export const createDelivery = async () => {
-    const res = await api.post(`/auth/restaurant/createDelivery`);
+export const createDelivery = async (delivery: any) => {
+    const res = await api.post(`/auth/restaurant/createDelivery`, delivery);
     return res.data;
 };
-export const deleteMeDelivery = async () => {
-    const res = await api.patch(`/auth/restaurant/deleteMeDelivery`);
+export const deleteMeDelivery = async (id: string) => {
+    const res = await api.delete(`/auth/restaurant/deleteMeDelivery/${id}`);
     return res.data;
 };

@@ -2,12 +2,16 @@ import { Text, View } from "react-native";
 import {Link, Redirect} from "expo-router";
 import {useEffect, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import WebSocketService from "@/services/webSocket"
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 export default function Index() {
     const [role, setRole] = useState<null | 'admin' | 'user' | 'delivery' | 'restaurant'>(null);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         const loadRole = async () => {
+            await ScreenOrientation.unlockAsync();
+            await WebSocketService.connect();
             try {
                 const storedRole = await AsyncStorage.getItem('role');
                 console.log(storedRole);

@@ -23,6 +23,10 @@ export default function RootLayout() {
             options={{ headerShown: false }}
         />
         <Stack.Screen
+            name="(delivery)"
+            options={{ headerShown: false }}
+        />
+        <Stack.Screen
             name="meal/[id]"
             options={{
                 headerShown: true,

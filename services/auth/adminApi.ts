@@ -5,7 +5,7 @@ import {storeKey} from "@/utils/utils";
 // For User Access
 export const userLogin = async () => {
     const res = await api.get(`/auth/user/signup`);
-    storeKey("userToken", res.data.token)
+    storeKey("authToken", res.data.token)
     storeKey("role", res.data.data.user.role)
     return res.data;
 };

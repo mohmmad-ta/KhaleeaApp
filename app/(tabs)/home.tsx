@@ -7,7 +7,7 @@ import { images } from "@/constants/images";
 import { BlurView } from 'expo-blur';
 import {colorsVar} from "@/constants/colorsVar"
 import ResCard from "@/components/ResCard";
-import {getAllRestaurant} from "@/services/meals/mealsApi";
+import {getAllRestaurant, getTopRestaurant} from "@/services/meals/mealsApi";
 
 const { width } = Dimensions.get('window');
 export default function Home() {
@@ -57,9 +57,13 @@ export default function Home() {
     }, [scrollY, showHeader]);
 
     const [data, setData] = useState<any[]>([]);
+    const [dataTop, setDataTop] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        getTopRestaurant().then((response) => {
+            setDataTop(response.data);
+        })
         getAllRestaurant().then((response) => {
             setData(response.data);
             setLoading(false)
@@ -92,7 +96,7 @@ export default function Home() {
                         <Carousel
                             width={width}
                             height={500}
-                            data={data1}
+                            data={dataTop}
                             autoPlay={true}
                             autoPlayInterval={5000}
                             scrollAnimationDuration={1000}
@@ -101,7 +105,7 @@ export default function Home() {
                                     <Image source={item.url} resizeMode="cover" className="w-full absolute top-0 left-0 h-full" />
                                     <Image source={images.bot} className="w-full absolute bottom-0 left-0 h-36" />
                                     <View className="h-36 px-10 overflow-hidden py-4 justify-center w-full items-center">
-                                        <Text className="text-2xl font-bold text-main-50">{item.title}</Text>
+                                        <Text className="text-2xl font-bold text-main-50">{item.name}</Text>
                                         <Text className="text-md text-center text-primary-950 mt-1">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam consequatur dignissimos error esse impedit inventore mollitia </Text>
                                     </View>
                                 </View>
@@ -126,8 +130,6 @@ export default function Home() {
                         <Text className="text-lg text-secondary-950 font-bold">
                             Latest Movies
                         </Text>
-                        <Link href={"/(rest)/homeRest"} >to rest page</Link>
-
                         <Image source={icons.logo} tintColor="#F15A29FF" className="size-8" />
                     </View>
 

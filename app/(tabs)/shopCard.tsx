@@ -4,20 +4,20 @@ import {icons} from "@/constants/icons";
 import MealCard from "@/components/MealCard";
 import SearchBar from "@/components/SearchBar";
 import {Link} from "expo-router";
+import {useDataStore} from '@/store/useDataStore';
+import {useEffect} from "react";
 
 export default function ShopCard() {
+    const card = useDataStore((state:any) => state.shopCard);
+    const setcard = useDataStore((state:any) => state.setShopCard);
+    const updateShopCard = useDataStore((state:any) => state.updateShopCard);
+
     const cat = [
         { id: 'test 1', url: require('@/assets/images/p1.jpg') },
         { id: 'test 2', url: require('@/assets/images/p1.jpg') },
         { id: 'test 3 mohmmad', url: require('@/assets/images/p1.jpg') },
         { id: 'test 4', url: require('@/assets/images/p1.jpg') },
         { id: 'test 5', url: require('@/assets/images/p1.jpg') },
-    ];
-    const mealData = [
-        { id: '1', url: require('@/assets/images/p1.jpg') },
-        { id: '2', url: require('@/assets/images/p2.jpg') },
-        { id: '4', url: require('@/assets/images/p5.jpg') },
-        { id: '3', url: require('@/assets/images/p3.jpg') },
     ];
   return (
       <View className="bg-screen flex-1">
@@ -51,27 +51,39 @@ export default function ShopCard() {
                   </View>
                   <View className="w-full h-0.5 bg-secondary-100 my-3 rounded-full"></View>
                   <FlatList
-                      data={mealData}
-                      renderItem={({ item }) =>
+                      data={card}
+                      renderItem={({ item, index }) =>
                           <View className="w-full mb-3 flex-row items-center justify-between rounded-md bg-white">
                               <View className="flex-row items-center gap-2">
-                                  <Image source={icons.remove} tintColor="#F15A29FF" className="size-6" />
-                                  <Text className="text-lg text-secondary-950 font-bold">4</Text>
-                                  <Image source={icons.add} tintColor="#F15A29FF" className="size-6" />
+                                  <TouchableOpacity
+                                      onPress={() => {
+                                          if(item.count>1) updateShopCard(index, item.count - 1)
+                                      }}
+                                      className="p-2"
+                                  >
+                                      <Image source={icons.remove} tintColor="#F15A29FF" className="size-6" />
+                                  </TouchableOpacity>
+                                  <Text className="text-lg text-secondary-950 font-bold">{item.count}</Text>
+                                  <TouchableOpacity
+                                      onPress={() => updateShopCard(index, item.count + 1)}
+                                      className="p-2"
+                                  >
+                                      <Image source={icons.add} tintColor="#F15A29FF" className="size-6" />
+                                  </TouchableOpacity>
                               </View>
                               <View className="flex-row items-center gap-2">
                                   <View className="gap-2 items-end">
                                       <Text className="text-lg text-primary-950 max-w-48 max-h-6 font-bold">Latest Movies</Text>
                                       <Text className="text-lg font-bold gap-2">
                                           <Text className="text-main-50"> $ </Text>
-                                          <Text className="text-secondary-950">44.99</Text>
+                                          <Text className="text-secondary-950">{item.item.price * item.count}</Text>
                                       </Text>
                                   </View>
                                   <Image source={item.url} className="w-28 h-28 rounded-md" />
                               </View>
                           </View>
                       }
-                      keyExtractor={(item) => item.id.toString()}
+                      keyExtractor={(item, index) => index.toString()}
                       className="w-full"
                       scrollEnabled={false}
                   />
@@ -88,7 +100,7 @@ export default function ShopCard() {
                   </TouchableOpacity>
                   <Text className="text-lg text-center w-[30%] font-bold gap-2">
                       <Text className="text-main-50"> $ </Text>
-                      <Text className="text-secondary-950">210,000</Text>
+                      <Text className="text-secondary-950">{card.reduce((sum: any, item: any) => sum + item.count * item.item.price, 0)}</Text>
                   </Text>
               </View>
           </View>

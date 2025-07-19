@@ -1,6 +1,8 @@
 import {FlatList, Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import {Link} from "expo-router";
 import {icons} from "@/constants/icons";
+import {useEffect, useState} from "react";
+import {myAllOrders} from "@/services/orders/orderApi";
 
 const OldOrders = () => {
     const cat = [
@@ -15,6 +17,25 @@ const OldOrders = () => {
         { id: '2', url: require('@/assets/images/p2.jpg') },
         { id: '3', url: require('@/assets/images/p3.jpg') },
     ];
+
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        myAllOrders().then((response) => {
+            setData(response.data);
+            setLoading(false)
+        })
+            .catch((error) => {
+                console.error('Failed to fetch data:', error);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <Text>Loading...</Text>;
+    }
+
     return (
         <View className="bg-screen flex-1">
             <ScrollView
@@ -24,7 +45,7 @@ const OldOrders = () => {
                 scrollEventThrottle={16}
             >
                 <FlatList
-                    data={mealData}
+                    data={data}
                     renderItem={({ item }) =>
                         <Link href={"/shopCard"}>
                             <TouchableOpacity className="w-full p-5 items-end rounded-md bg-white shadow-md shadow-primary-200">

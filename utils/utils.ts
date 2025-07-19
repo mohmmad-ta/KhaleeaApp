@@ -16,12 +16,12 @@ export const getKey = (key :string) => {
 };
 
 export const removeKey = () => {
-    AsyncStorage.removeItem('userToken').catch(console.error);
+    AsyncStorage.removeItem('authToken').catch(console.error);
 };
 
 export const logout = async () => {
     const res = await api.get(`/auth/logout`);
-    storeKey("userToken", '')
+    storeKey("authToken", '')
     storeKey("role", '')
     return res.data;
 };

@@ -6,7 +6,7 @@ export const userLogin = async ({phone}: User) => {
     const res = await api.post(`/auth/user/login`,{
         phone: phone,
     });
-    storeKey("userToken", res.data.token)
+    storeKey("authToken", res.data.token)
     storeKey("role", res.data.data.user.role)
     return res.data;
 };

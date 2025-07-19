@@ -10,11 +10,18 @@ interface Meal {
 
 interface User {
   name: string;
-  phone: any;
+  phone: string;
 }
 interface Restaurant {
+  _id: string;
+  id: string;
   name: string;
-  phone: any;
+  phone: string;
+  discount: string;
+  ratingsAverage: string;
+  photo: string;
+  role: string;
+  active: string;
 }
 interface Delivery {
   name: string;

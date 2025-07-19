@@ -7,28 +7,23 @@ import Carousel from "react-native-reanimated-carousel";
 import {images} from "@/constants/images";
 import {icons} from "@/constants/icons";
 import MealCard from "@/components/MealCard";
+import {getMeal, getRestaurantMeals} from "@/services/meals/mealsApi";
+import {useDataStore} from "@/store/useDataStore";
 
 const MealDetails = () => {
     const {id} = useLocalSearchParams()
-    const router = useRouter();
-    const data = [
-        { title: 'lorem test 1', url: require('@/assets/images/p1.jpg') },
-        { title: 'lorem test 2', url: require('@/assets/images/p2.jpg') },
-        { title: 'lorem test 3', url: require('@/assets/images/p3.jpg') },
-        { title: 'lorem test 4', url: require('@/assets/images/p4.jpg') },
-        { title: 'lorem test 5', url: require('@/assets/images/p5.jpg') },
-    ];
-    const mealData = [
-        { id: '1', url: require('@/assets/images/p1.jpg') },
-        { id: '2', url: require('@/assets/images/p2.jpg') },
-        { id: '3', url: require('@/assets/images/p3.jpg') },
-        { id: '4', url: require('@/assets/images/p4.jpg') },
-        { id: '5', url: require('@/assets/images/p5.jpg') },
-    ];
-
+    const card = useDataStore((state:any) => state.shopCard);
+    const setcard = useDataStore((state:any) => state.setShopCard);
     const navigation = useNavigation();
     const scrollY = useRef(new Animated.Value(0)).current;
+    const [itemCount, setItemCount] = useState(1);
     const [showHeader, setShowHeader] = useState(true);
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const pushItem = () => {
+        setcard({ item: data, count: itemCount })
+    }
 
     useEffect(() => {
         const listener = scrollY.addListener(({ value }) => {
@@ -63,6 +58,20 @@ const MealDetails = () => {
         };
     }, [scrollY, showHeader]);
 
+    useEffect(() => {
+        getMeal(id).then((response) => {
+            setData(response.data);
+            setLoading(false)
+        })
+            .catch((error) => {
+                console.error('Failed to fetch data:', error);
+                setLoading(false);
+            });
+    }, []);
+    if (loading) {
+        return <Text>Loading...</Text>;
+    }
+
     return (
         <View className="bg-screen flex-1 relative">
             <Animated.ScrollView
@@ -79,14 +88,14 @@ const MealDetails = () => {
 
                 <>
                     <View className="w-full h-[26rem] justify-end items-center relative">
-                        <Image source={mealData[2].url} resizeMode="cover" className="w-full absolute top-0 left-0 h-full" />
+                        <Image source={{uri: data.image}} resizeMode="cover" className="w-full absolute top-0 left-0 h-full" />
                         <Image source={images.bot} className="w-full absolute bottom-0 left-0 h-36" />
                     </View>
                     <View className="w-full justify-end mt-[-3rem] items-center relative">
                         <View className="h-36 overflow-hidden relative rounded-xl mb- justify-center w-[90%] items-center">
                             <BlurView intensity={50} tint="light" style={{ flex: 1, width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, }} />
-                            <Text className="text-2xl mb-3 font-bold text-main-50">Lorem ipsum dolor</Text>
-                            <Text className="text-md text-center text-secondary-950 mt-1">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam consequatur dignissimos error esse impedit inventore mollitia </Text>
+                            <Text className="text-2xl mb-3 font-bold text-main-50">{data.name}</Text>
+                            <Text className="text-md text-center text-secondary-950 mt-1">{data.description}</Text>
                         </View>
                     </View>
                 </>
@@ -108,20 +117,32 @@ const MealDetails = () => {
             </Animated.ScrollView>
             <View className="absolute p-6 pt-3 pb-10 w-full h-36 bg-white bottom-0 left-0" >
                 <View className="flex-row w-full justify-center mb-4 items-center gap-10">
-                    <Image source={icons.remove} tintColor="#F15A29FF" className="size-6" />
-                    <Text className="text-lg text-secondary-950 font-bold">4</Text>
-                    <Image source={icons.add} tintColor="#F15A29FF" className="size-6" />
+                    <TouchableOpacity
+                        onPress={() => {
+                            if(itemCount>1) setItemCount(itemCount - 1)
+                        }}
+                        className="p-2"
+                    >
+                        <Image source={icons.remove} tintColor="#F15A29FF" className="size-6" />
+                    </TouchableOpacity>
+                    <Text className="text-lg text-secondary-950 font-bold">{itemCount}</Text>
+                    <TouchableOpacity
+                        onPress={() => setItemCount(itemCount + 1)}
+                        className="p-2"
+                    >
+                        <Image source={icons.add} tintColor="#F15A29FF" className="size-6" />
+                    </TouchableOpacity>
                 </View>
                 <View className="flex-row w-full justify-center items-center gap-3">
                     <TouchableOpacity
-                        onPress={() => alert('Pressed!')}
+                        onPress={() => pushItem()}
                         className="p-2 w-[70%] rounded-md bg-main-50"
                     >
                         <Text className="text-white font-bold w-full text-center">Custom Button</Text>
                     </TouchableOpacity>
                     <Text className="text-lg text-center w-[30%] font-bold gap-2">
                         <Text className="text-main-50"> $ </Text>
-                        <Text className="text-secondary-950">210,000</Text>
+                        <Text className="text-secondary-950">{data.price * itemCount}</Text>
                     </Text>
                 </View>
             </View>
